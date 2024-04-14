@@ -1,6 +1,0 @@
-@DrugstoreApi_HostAddress = http://localhost:5077
-
-GET {{DrugstoreApi_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

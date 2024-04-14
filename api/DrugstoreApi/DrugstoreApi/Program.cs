@@ -1,4 +1,7 @@
 
+using DrugstoreApi.Models;
+using Microsoft.EntityFrameworkCore;
+
 namespace DrugstoreApi
 {
     public class Program
@@ -13,6 +16,8 @@ namespace DrugstoreApi
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddDbContext<FarmaciaContext>(optionsBuilder => optionsBuilder.UseSqlServer(builder.Configuration.GetConnectionString("Farmacia")));
 
             var app = builder.Build();
 
