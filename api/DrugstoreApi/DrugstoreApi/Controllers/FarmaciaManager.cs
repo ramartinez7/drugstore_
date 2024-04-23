@@ -10,7 +10,7 @@ namespace DrugstoreApi.Controllers
         GetMedicamentoDtoResponse GetMedicamentosPaginados(string partial_name, int? category, int? shelf, int? slot, int? box, bool? status, int page, int rows);
         GetMedicamentoByIDDto GetMedicamentoByID(int Id);
     }
-
+    //Inyección DbContext
     public class FarmaciaManager : IFarmacia
     {
         private readonly FarmaciaContext farmaciaContext;
@@ -19,10 +19,9 @@ namespace DrugstoreApi.Controllers
         {
             this.farmaciaContext = farmaciaContext;
         }
-
+        //ReadMedicinasPaginadas
         public GetMedicamentoDtoResponse GetMedicamentosPaginados(string partial_name, int? category, int? shelf, int? slot, int? box, bool? status, int page, int rows)
         {
-            //prepare object for response
             GetMedicamentoDtoResponse response = new GetMedicamentoDtoResponse();
 
             IQueryable<MedicamentoUbicacion> basequery = farmaciaContext.MedicamentoUbicacions
@@ -38,7 +37,6 @@ namespace DrugstoreApi.Controllers
 
             int total = basequery.Count();
 
-            //perform query
             MedicamentoBasicInfo[] data = basequery
                     .Skip((page - 1) * rows)
                     .Take(rows)
@@ -58,7 +56,7 @@ namespace DrugstoreApi.Controllers
 
             return response;
         }
-
+        //ReadMedicinasById
         public GetMedicamentoByIDDto GetMedicamentoByID(int Id)
         {
             GetMedicamentoByIDDto response = new GetMedicamentoByIDDto();
@@ -86,11 +84,3 @@ namespace DrugstoreApi.Controllers
     }
 }
 
-
-//.Where(um =>
-//    um.Medicamento.Nombre.StartsWith(partial_name)
-//    && um.Medicamento.CategoriaId == category
-//    && um.Ubicacion.Estante == shelf
-//    && um.Ubicacion.Casilla == slot
-//    && um.Ubicacion.Caja == box
-//    && um.Medicamento.Activo == status);
