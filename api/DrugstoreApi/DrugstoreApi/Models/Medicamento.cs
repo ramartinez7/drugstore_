@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace DrugstoreApi.Models;
+﻿namespace DrugstoreApi.Models;
 
 public partial class Medicamento
 {
@@ -20,10 +17,10 @@ public partial class Medicamento
     public int AdministracionId { get; set; }
 
     public int CategoriaId { get; set; }
-    
+
     public virtual Administracion Administracion { get; set; } = null!;
 
-    public virtual Categorium Categoria { get; set; } = null!;
+    public virtual Categoria Categoria { get; set; } = null!;
 
     public virtual Concentracion Concentracion { get; set; } = null!;
 

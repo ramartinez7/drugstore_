@@ -1,14 +1,18 @@
-﻿using DrugstoreApi.Dto.Response;
+﻿using DrugstoreApi.Dto.Request;
+using DrugstoreApi.Dto.Response;
 using DrugstoreApi.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace DrugstoreApi.Controllers
 {
     public interface IFarmacia
     {
-        GetMedicamentoDtoResponse GetMedicamentosPaginados(string partial_name, int? category, int? shelf, int? slot, int? box, bool? status, int page, int rows);
+        GetMedicamentosPaginadosDto GetMedicamentosPaginados(string partial_name, int? category, int? shelf, int? slot, int? box, bool? status, int page, int rows);
         GetMedicamentoByIDDto GetMedicamentoByID(int Id);
+        CreateMedicamentoDto CreateMedicamento(CreateMedicamentoDto request);
+        UpdateMedicamentoDto UpdateMedicamento(UpdateMedicamentoDto request);
+        DeleteMedicamentoDto DeleteMedicamento(int Id);
     }
     //Inyección DbContext
     public class FarmaciaManager : IFarmacia
@@ -20,13 +24,13 @@ namespace DrugstoreApi.Controllers
             this.farmaciaContext = farmaciaContext;
         }
         //ReadMedicinasPaginadas
-        public GetMedicamentoDtoResponse GetMedicamentosPaginados(string partial_name, int? category, int? shelf, int? slot, int? box, bool? status, int page, int rows)
+        public GetMedicamentosPaginadosDto GetMedicamentosPaginados(string partial_name, int? category, int? shelf, int? slot, int? box, bool? status, int page, int rows)
         {
-            GetMedicamentoDtoResponse response = new GetMedicamentoDtoResponse();
+            GetMedicamentosPaginadosDto response = new GetMedicamentosPaginadosDto();
 
-            IQueryable<MedicamentoUbicacion> basequery = farmaciaContext.MedicamentoUbicacions
-                    .Include(um => um.Medicamento) // join to medicamento
-                    .Include(um => um.Ubicacion) //* join to ubicacion
+            IQueryable<MedicamentoUbicacion> basequery = farmaciaContext.MedicamentoUbicacion
+                    .Include(um => um.Medicamento)
+                    .Include(um => um.Ubicacion)
                     .Where(um =>
                         (partial_name == null || um.Medicamento.Nombre.StartsWith(partial_name))
                         && (category == null || um.Medicamento.CategoriaId == category)
@@ -53,7 +57,6 @@ namespace DrugstoreApi.Controllers
             response.Numero_Registros = rows;
             response.Pagina = page;
             response.Total = total;
-
             return response;
         }
         //ReadMedicinasById
@@ -61,7 +64,7 @@ namespace DrugstoreApi.Controllers
         {
             GetMedicamentoByIDDto response = new GetMedicamentoByIDDto();
 
-            Medicamento medicamento = farmaciaContext.Medicamentos
+            Medicamento medicamento = farmaciaContext.Medicamento
                 .Include(m => m.Presentacion)
                 .Include(m => m.Concentracion)
                 .Include(m => m.Administracion)
@@ -70,7 +73,7 @@ namespace DrugstoreApi.Controllers
 
             if (medicamento == null)
                 return null;
-                    
+
             response.Nombre = medicamento.Nombre;
             response.Activo = medicamento.Activo;
             response.Descripcion = medicamento.Descripcion;
@@ -78,9 +81,55 @@ namespace DrugstoreApi.Controllers
             response.Concentracion = medicamento.Concentracion.Tipo;
             response.Administracion = medicamento.Administracion.Tipo;
             response.Categoria = medicamento.Categoria.Nombre;
-
-            return response;         
+            return response;
         }
+        //CreateMedicinas
+        public CreateMedicamentoDto CreateMedicamento(CreateMedicamentoDto request)
+        {
+            Medicamento medicamento = new Medicamento();
+            request.Nombre = medicamento.Nombre;
+            request.Activo = medicamento.Activo;
+            request.Descripcion = medicamento.Descripcion;
+            request.medicamento.Presentacion.Tipo = medicamento.Presentacion.Tipo;
+            request.medicamento.Concentracion.Tipo = medicamento.Concentracion.Tipo;
+            request.medicamento.Administracion.Tipo = medicamento.Administracion.Tipo;
+            request.medicamento.Categoria.Nombre = medicamento.Categoria.Nombre;
+            farmaciaContext.Medicamento.Entry(medicamento).State = EntityState.Added;
+            farmaciaContext.SaveChanges();
+            return request;
+        }
+        //UpdateMedicinas
+        public UpdateMedicamentoDto UpdateMedicamento(UpdateMedicamentoDto request)
+        {
+            Medicamento medicamento = new Medicamento();
+            request.Nombre = medicamento.Nombre;
+            request.Activo = medicamento.Activo;
+            request.Descripcion = medicamento.Descripcion;
+            request.Presentacion = medicamento.Presentacion.Tipo;
+            request.Concentracion = medicamento.Concentracion.Tipo;
+            request.Administracion = medicamento.Administracion.Tipo;
+            request.Categoria = medicamento.Categoria.Nombre;
+            farmaciaContext.Medicamento.Entry(medicamento).State = EntityState.Modified;
+            farmaciaContext.SaveChanges();
+            return request;
+        }
+        //DeleteMedicinas
+        public DeleteMedicamentoDto DeleteMedicamento(int Id)
+        {
+            DeleteMedicamentoDto request = new DeleteMedicamentoDto();
+
+            Medicamento medicamento = farmaciaContext.Medicamento.Where(m => m.MedicamentoId == Id).FirstOrDefault();
+            request.Nombre = medicamento.Nombre;
+            request.Activo = medicamento.Activo;
+            request.Descripcion = medicamento.Descripcion;
+            request.Presentacion = medicamento.Presentacion.Tipo;
+            request.Concentracion = medicamento.Concentracion.Tipo;
+            request.Administracion = medicamento.Administracion.Tipo;
+            request.Categoria = medicamento.Categoria.Nombre;
+            farmaciaContext.Medicamento.Entry(medicamento).State = EntityState.Deleted;
+            farmaciaContext.SaveChanges();
+            return request;
+        }       
     }
 }
 

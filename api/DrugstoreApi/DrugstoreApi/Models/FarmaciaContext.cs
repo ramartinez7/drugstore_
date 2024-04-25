@@ -15,19 +15,19 @@ public partial class FarmaciaContext : DbContext
     {
     }
 
-    public virtual DbSet<Administracion> Administracions { get; set; }
+    public virtual DbSet<Administracion> Administracion { get; set; }
 
-    public virtual DbSet<Categorium> Categoria { get; set; }
+    public virtual DbSet<Categoria> Categoria { get; set; }
 
-    public virtual DbSet<Concentracion> Concentracions { get; set; }
+    public virtual DbSet<Concentracion> Concentracion { get; set; }
 
-    public virtual DbSet<Medicamento> Medicamentos { get; set; }
+    public virtual DbSet<Medicamento> Medicamento { get; set; }
 
-    public virtual DbSet<MedicamentoUbicacion> MedicamentoUbicacions { get; set; }
+    public virtual DbSet<MedicamentoUbicacion> MedicamentoUbicacion { get; set; }
 
-    public virtual DbSet<Presentacion> Presentacions { get; set; }
+    public virtual DbSet<Presentacion> Presentacion { get; set; }
 
-    public virtual DbSet<Ubicacion> Ubicacions { get; set; }
+    public virtual DbSet<Ubicacion> Ubicacion { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -46,7 +46,7 @@ public partial class FarmaciaContext : DbContext
                 .HasColumnName("tipo");
         });
 
-        modelBuilder.Entity<Categorium>(entity =>
+        modelBuilder.Entity<Categoria>(entity =>
         {
             entity.HasKey(e => e.CategoriaId).HasName("PK__categori__DB875A4F59974C85");
 

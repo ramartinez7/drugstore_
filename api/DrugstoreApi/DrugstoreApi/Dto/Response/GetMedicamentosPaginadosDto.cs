@@ -2,7 +2,7 @@
 
 namespace DrugstoreApi.Dto.Response
 {
-    public class GetMedicamentoDtoResponse
+    public class GetMedicamentosPaginadosDto
     {
         public MedicamentoBasicInfo[] Data { get; set; }
         public int Pagina { get; set; }
@@ -12,9 +12,10 @@ namespace DrugstoreApi.Dto.Response
 
     public class MedicamentoBasicInfo
     {
-        public string Nombre { get; set; } 
+        public string Nombre { get; set; }
+        public bool Estado { get; set; }
         public string? Descripcion { get; set; } 
         public string Ubicacion { get; set; } 
-        public bool Estado { get; set; } 
+       
     }
 }
