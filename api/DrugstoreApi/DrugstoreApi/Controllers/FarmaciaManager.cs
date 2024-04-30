@@ -10,9 +10,9 @@ namespace DrugstoreApi.Controllers
     {
         GetMedicamentosPaginadosDto GetMedicamentosPaginados(string partial_name, int? category, int? shelf, int? slot, int? box, bool? status, int page, int rows);
         GetMedicamentoByIDDto GetMedicamentoByID(int Id);
-        CreateMedicamentoDto CreateMedicamento(CreateMedicamentoDto request);
-        UpdateMedicamentoDto UpdateMedicamento(UpdateMedicamentoDto request);
-        DeleteMedicamentoDto DeleteMedicamento(int Id);
+        Medicamento CreateMedicamento(CreateMedicamentoDto request, int UbicacionId);
+        Medicamento UpdateMedicamento(UpdateMedicamentoDto request);
+        Medicamento DeleteMedicamento(int Id);
     }
     //Inyección DbContext
     public class FarmaciaManager : IFarmacia
@@ -84,51 +84,54 @@ namespace DrugstoreApi.Controllers
             return response;
         }
         //CreateMedicinas
-        public CreateMedicamentoDto CreateMedicamento(CreateMedicamentoDto request)
+        public Medicamento CreateMedicamento(CreateMedicamentoDto request, int UbicacionId)//-----------------------------------------
         {
             Medicamento medicamento = new Medicamento();
-            request.Nombre = medicamento.Nombre;
-            request.Activo = medicamento.Activo;
-            request.Descripcion = medicamento.Descripcion;
-            request.medicamento.Presentacion.Tipo = medicamento.Presentacion.Tipo;
-            request.medicamento.Concentracion.Tipo = medicamento.Concentracion.Tipo;
-            request.medicamento.Administracion.Tipo = medicamento.Administracion.Tipo;
-            request.medicamento.Categoria.Nombre = medicamento.Categoria.Nombre;
+            medicamento.Nombre = request.Nombre;
+            medicamento.Activo = request.Activo;
+            medicamento.Descripcion = request.Descripcion;
+            medicamento.Presentacion.Tipo = request.Presentacion;
+            medicamento.Concentracion.Tipo = request.Concentracion;
+            medicamento.Administracion.Tipo = request.Administracion;
+            medicamento.Categoria.Nombre = request.Categoria;          
+            medicamento.Ubicacion.UbicacionId = UbicacionId;
             farmaciaContext.Medicamento.Entry(medicamento).State = EntityState.Added;
             farmaciaContext.SaveChanges();
-            return request;
+            return medicamento;
         }
         //UpdateMedicinas
-        public UpdateMedicamentoDto UpdateMedicamento(UpdateMedicamentoDto request)
+        public Medicamento UpdateMedicamento(UpdateMedicamentoDto request)
         {
             Medicamento medicamento = new Medicamento();
-            request.Nombre = medicamento.Nombre;
-            request.Activo = medicamento.Activo;
-            request.Descripcion = medicamento.Descripcion;
-            request.Presentacion = medicamento.Presentacion.Tipo;
-            request.Concentracion = medicamento.Concentracion.Tipo;
-            request.Administracion = medicamento.Administracion.Tipo;
-            request.Categoria = medicamento.Categoria.Nombre;
+            medicamento.Nombre = request.Nombre;
+            medicamento.Activo = request.Activo;
+            medicamento.Descripcion = request.Descripcion;
+            medicamento.Presentacion.Tipo = request.Presentacion;
+            medicamento.Concentracion.Tipo = request.Concentracion;
+            medicamento.Administracion.Tipo = request.Administracion;
+            medicamento.Categoria.Nombre = request.Categoria;
             farmaciaContext.Medicamento.Entry(medicamento).State = EntityState.Modified;
             farmaciaContext.SaveChanges();
-            return request;
+            return medicamento;
         }
         //DeleteMedicinas
-        public DeleteMedicamentoDto DeleteMedicamento(int Id)
+        public Medicamento DeleteMedicamento(int Id)
         {
             DeleteMedicamentoDto request = new DeleteMedicamentoDto();
 
-            Medicamento medicamento = farmaciaContext.Medicamento.Where(m => m.MedicamentoId == Id).FirstOrDefault();
-            request.Nombre = medicamento.Nombre;
-            request.Activo = medicamento.Activo;
-            request.Descripcion = medicamento.Descripcion;
-            request.Presentacion = medicamento.Presentacion.Tipo;
-            request.Concentracion = medicamento.Concentracion.Tipo;
-            request.Administracion = medicamento.Administracion.Tipo;
-            request.Categoria = medicamento.Categoria.Nombre;
+            Medicamento medicamento = farmaciaContext.Medicamento
+                .Where(m => m.MedicamentoId == Id)
+                .FirstOrDefault();
+            medicamento.Nombre = request.Nombre;
+            medicamento.Activo = request.Activo;
+            medicamento.Descripcion = request.Descripcion;
+            medicamento.Presentacion.Tipo = request.Presentacion;
+            medicamento.Concentracion.Tipo = request.Concentracion;
+            medicamento.Administracion.Tipo = request.Administracion;
+            medicamento.Categoria.Nombre = request.Categoria;
             farmaciaContext.Medicamento.Entry(medicamento).State = EntityState.Deleted;
             farmaciaContext.SaveChanges();
-            return request;
+            return medicamento;
         }       
     }
 }

@@ -18,6 +18,8 @@ public partial class Medicamento
 
     public int CategoriaId { get; set; }
 
+    public Ubicacion Ubicacion { get; set; }
+
     public virtual Administracion Administracion { get; set; } = null!;
 
     public virtual Categoria Categoria { get; set; } = null!;

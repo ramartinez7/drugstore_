@@ -41,13 +41,13 @@ namespace DrugstoreApi.Controllers
         //CreateMedicinas
         [HttpPost]
         [Route("CreateMedicamento")]
-        public ActionResult CreateMedicamento(CreateMedicamentoDto request)
+        public ActionResult CreateMedicamento(CreateMedicamentoDto request, int UbicacionId)
         {
             if (request == null)
             {
                 return BadRequest("No se ha podido añadir un nuevo medicamento");
             }
-            return Ok(_farmacia.CreateMedicamento(request));
+            return Ok(_farmacia.CreateMedicamento(request, UbicacionId));
         }
         //UpdateMedicinas
         [HttpPut]
@@ -62,7 +62,7 @@ namespace DrugstoreApi.Controllers
         }
         //DeleteMedicinas
         [HttpDelete]
-        [Route("DeleteMedicamento")]
+        [Route("DeleteMedicamento/{Id}")]
         public ActionResult DeleteMedicamento(int Id)
         {
             if (Id == 0)
