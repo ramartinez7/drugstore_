@@ -18,14 +18,17 @@ namespace DrugstoreApi.Controllers
         //ReadMedicinasPaginadas
         [HttpGet]
         [Route("ReadMedicamentosPaginados")]
-        public ActionResult GetMedicamentosPaginados(string partial_name, int? category, int? shelf, int? slot, int? box, bool? status, int page, int rows)
+        public ActionResult GetMedicamentosPaginados(string Nombre_parcial, int? Categoria, int? Estante, int? Casilla, int? Caja, bool? Estado, int Pagina, int Filas)
         {
-            if(rows == 0)
+            if (Pagina == 0)
             {
-                return BadRequest("Las filas no pueden ser cero");
+                return BadRequest("Digite el número la página que desea visualizar");
             }
-
-            return Ok(_farmacia.GetMedicamentosPaginados(partial_name,category,shelf,slot,box,status,page,rows));
+            if (Filas == 0)
+            {
+                return BadRequest("Digite el número de filas que desea ver por página");
+            }         
+            return Ok(_farmacia.GetMedicamentosPaginados(Nombre_parcial, Categoria, Estante, Casilla, Caja, Estado, Pagina, Filas));
         }
         //ReadMedicinasById
         [HttpGet]
@@ -34,31 +37,31 @@ namespace DrugstoreApi.Controllers
         {
             if (Id == 0)
             {
-                return BadRequest("El id no puede ser cero");
+                return BadRequest("El id no puede ser cero, digite nuevamente");
             }
             return Ok(_farmacia.GetMedicamentoByID(Id));
         }
         //CreateMedicinas
         [HttpPost]
         [Route("CreateMedicamento")]
-        public ActionResult CreateMedicamento(CreateMedicamentoDto request, int UbicacionId)
+        public ActionResult CreateMedicamento(CreateMedicamentoDto request)
         {
             if (request == null)
             {
                 return BadRequest("No se ha podido añadir un nuevo medicamento");
             }
-            return Ok(_farmacia.CreateMedicamento(request, UbicacionId));
+            return Ok(_farmacia.CreateMedicamento(request));
         }
         //UpdateMedicinas
         [HttpPut]
-        [Route("UpdateMedicamento")]
-        public ActionResult UpdateMedicamento(UpdateMedicamentoDto request)
+        [Route("UpdateMedicamento/{Id}")]
+        public ActionResult UpdateMedicamento(UpdateMedicamentoDto request, int Id)
         {
             if (request == null)
             {
                 return BadRequest("No se ha podido actualizar el medicamento existente");
             }
-            return Ok(_farmacia.UpdateMedicamento(request));
+            return Ok(_farmacia.UpdateMedicamento(request, Id));
         }
         //DeleteMedicinas
         [HttpDelete]

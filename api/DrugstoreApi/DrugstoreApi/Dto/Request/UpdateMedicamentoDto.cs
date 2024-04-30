@@ -8,12 +8,12 @@
 
         public string? Descripcion { get; set; }
 
-        public string Presentacion { get; set; }
+        public int PresentacionId { get; set; }
 
-        public string Concentracion { get; set; }
+        public int ConcentracionId { get; set; }
 
-        public string Administracion { get; set; }
+        public int AdministracionId { get; set; }
 
-        public string Categoria { get; set; }
+        public int CategoriaId { get; set; }
     }
 }
