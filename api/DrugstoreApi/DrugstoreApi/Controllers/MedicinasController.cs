@@ -27,7 +27,7 @@ namespace DrugstoreApi.Controllers
             if (Filas == 0)
             {
                 return BadRequest("Digite el número de filas que desea ver por página");
-            }         
+            }
             return Ok(_farmacia.GetMedicamentosPaginados(Nombre_parcial, Categoria, Estante, Casilla, Caja, Estado, Pagina, Filas));
         }
         //ReadMedicinasById
@@ -74,5 +74,28 @@ namespace DrugstoreApi.Controllers
             }
             return Ok(_farmacia.DeleteMedicamento(Id));
         }
+        //CreateEstantes
+        [HttpPost]
+        [Route("CreateEstantes")]
+        public ActionResult CreateEstantes(int Estante, int Casilla, int Caja)
+        {
+            if (Estante == 0 || Casilla == 0 || Caja == 0)
+            {
+                return BadRequest("Todos los campos deben contener un valor");
+            }
+            return Ok(_farmacia.CreateEstantes(Estante, Casilla, Caja));
+        }
+        //LocateMedicamento
+        [HttpPut]
+        [Route("LocateMedicamento")]
+        public ActionResult LocateMedicamento(int MedicamentoId, int UbicacionId)
+        {
+            if (MedicamentoId == 0 || UbicacionId == 0)
+            {
+                return BadRequest("Es obligatorio digitar ambos valores");
+            }
+            return Ok(_farmacia.LocateMedicamento(MedicamentoId, UbicacionId));
+        }
+        
     }
 }
