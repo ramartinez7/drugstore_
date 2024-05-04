@@ -1,6 +1,5 @@
-﻿using Azure.Core;
-using DrugstoreApi.Dto.Request;
-using DrugstoreApi.Models;
+﻿using DrugstoreApi.Dto.Request;
+using DrugstoreApi.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DrugstoreApi.Controllers
@@ -15,6 +14,7 @@ namespace DrugstoreApi.Controllers
         {
             _farmacia = farmacia;
         }
+
         //ReadMedicinasPaginadas
         [HttpGet]
         [Route("ReadMedicamentosPaginados")]
@@ -97,6 +97,14 @@ namespace DrugstoreApi.Controllers
             }
             return Ok(_farmacia.LocateMedicamento(Id, nuevaUbicacionId));
         }
-        
+        //GenerateReporte
+        [HttpGet]
+        [Route("GenerateReporte")]
+        public FileStreamResult GenerateReporte()
+        {
+            MemoryStream stream = _farmacia.GenerateReporte();
+            return File(stream, "text/plain", "report.txt");
+        }
+
     }
 }

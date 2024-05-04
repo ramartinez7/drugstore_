@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace DrugstoreApi.Dto.Response
+﻿namespace DrugstoreApi.Dto.Response
 {
     public class GetMedicamentosPaginadosDto
     {
@@ -14,7 +12,7 @@ namespace DrugstoreApi.Dto.Response
     {
         public string Nombre { get; set; }
         public bool Estado { get; set; }
-        public string? Descripcion { get; set; } 
-        public string Ubicacion { get; set; }      
+        public string? Descripcion { get; set; }
+        public string Ubicacion { get; set; }
     }
 }
