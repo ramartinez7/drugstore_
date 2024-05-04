@@ -122,9 +122,9 @@ public partial class FarmaciaContext : DbContext
 
         modelBuilder.Entity<MedicamentoUbicacion>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("medicamento_ubicacion");
+            entity.HasKey(e => e.MedicamentoUbicacionId).HasName("PK_medicamento_ubicacion");
+
+           entity.ToTable("medicamento_ubicacion");
 
             entity.Property(e => e.MedicamentoId).HasColumnName("medicamento_id");
             entity.Property(e => e.MedicamentoUbicacionId)

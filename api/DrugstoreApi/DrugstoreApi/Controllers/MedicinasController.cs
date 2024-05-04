@@ -77,24 +77,25 @@ namespace DrugstoreApi.Controllers
         //CreateEstantes
         [HttpPost]
         [Route("CreateEstantes")]
-        public ActionResult CreateEstantes(int Estante, int Casilla, int Caja)
+        public ActionResult CreateEstantes(int Casillas, int Cajas)
         {
-            if (Estante == 0 || Casilla == 0 || Caja == 0)
+            if (Casillas == 0 || Cajas == 0)
             {
                 return BadRequest("Todos los campos deben contener un valor");
             }
-            return Ok(_farmacia.CreateEstantes(Estante, Casilla, Caja));
+            _farmacia.CreateEstantes(Casillas, Cajas);
+            return Ok();
         }
         //LocateMedicamento
         [HttpPut]
         [Route("LocateMedicamento")]
-        public ActionResult LocateMedicamento(int MedicamentoId, int UbicacionId)
+        public ActionResult LocateMedicamento(int Id, int nuevaUbicacionId)
         {
-            if (MedicamentoId == 0 || UbicacionId == 0)
+            if (Id == 0 || nuevaUbicacionId == 0)
             {
                 return BadRequest("Es obligatorio digitar ambos valores");
             }
-            return Ok(_farmacia.LocateMedicamento(MedicamentoId, UbicacionId));
+            return Ok(_farmacia.LocateMedicamento(Id, nuevaUbicacionId));
         }
         
     }

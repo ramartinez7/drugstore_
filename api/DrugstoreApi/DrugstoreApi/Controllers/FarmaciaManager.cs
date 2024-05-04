@@ -2,8 +2,6 @@
 using DrugstoreApi.Dto.Response;
 using DrugstoreApi.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
-using Microsoft.VisualBasic;
 
 namespace DrugstoreApi.Controllers
 {
@@ -14,8 +12,8 @@ namespace DrugstoreApi.Controllers
         Medicamento CreateMedicamento(CreateMedicamentoDto request);
         Medicamento UpdateMedicamento(UpdateMedicamentoDto request, int Id);
         Medicamento DeleteMedicamento(int Id);
-        Ubicacion CreateEstantes(int Estante, int Casilla, int Caja);
-        MedicamentoUbicacion LocateMedicamento(int MedicamentoId, int UbicacionId);
+        void CreateEstantes(int Casillas, int Cajas);
+        MedicamentoUbicacion LocateMedicamento(int Id, int nuevaUbicacionId);
     }
     //Inyección DbContext
     public class FarmaciaManager : IFarmacia
@@ -29,7 +27,7 @@ namespace DrugstoreApi.Controllers
         //ReadMedicinasPaginadas
         public GetMedicamentosPaginadosDto GetMedicamentosPaginados(string Nombre_parcial, int? Categoria, int? Estante, int? Casilla, int? Caja, bool? Estado, int Pagina, int Filas)
         {
-            GetMedicamentosPaginadosDto response = new GetMedicamentosPaginadosDto();
+            GetMedicamentosPaginadosDto response = new();
 
             IQueryable<MedicamentoUbicacion> buscadorMedicamento = farmaciaContext.MedicamentoUbicacion
                     .Include(um => um.Medicamento)
@@ -64,7 +62,7 @@ namespace DrugstoreApi.Controllers
         //ReadMedicinasById
         public GetMedicamentoByIDDto GetMedicamentoByID(int Id)
         {
-            GetMedicamentoByIDDto response = new GetMedicamentoByIDDto();
+            GetMedicamentoByIDDto response = new();
 
             Medicamento medicamento = farmaciaContext.Medicamento
                 .Include(m => m.Presentacion)
@@ -83,18 +81,18 @@ namespace DrugstoreApi.Controllers
             return response;
         }
         //CreateMedicinas
-        public Medicamento CreateMedicamento(CreateMedicamentoDto request)//-----------------------------------------
+        public Medicamento CreateMedicamento(CreateMedicamentoDto request)
         {
-            Medicamento medicamento = new Medicamento();
+            Medicamento medicamento = new();
             medicamento.Nombre = request.Nombre;
             medicamento.Activo = request.Activo;
             medicamento.Descripcion = request.Descripcion;
             medicamento.PresentacionId = request.PresentacionId;
             medicamento.ConcentracionId = request.ConcentracionId;
             medicamento.AdministracionId = request.AdministracionId;
-            medicamento.CategoriaId = request.CategoriaId;          
+            medicamento.CategoriaId = request.CategoriaId;
             farmaciaContext.Medicamento.Entry(medicamento).State = EntityState.Added;
-            farmaciaContext.SaveChanges();
+            _ = farmaciaContext.SaveChanges();
             return medicamento;
         }
         //UpdateMedicinas
@@ -111,7 +109,7 @@ namespace DrugstoreApi.Controllers
             medicamento.AdministracionId = request.AdministracionId;
             medicamento.CategoriaId = request.CategoriaId;
             farmaciaContext.Medicamento.Entry(medicamento).State = EntityState.Modified;
-            farmaciaContext.SaveChanges();
+            _ = farmaciaContext.SaveChanges();
             return medicamento;
         }
         //DeleteMedicinas
@@ -121,43 +119,38 @@ namespace DrugstoreApi.Controllers
                 .Where(m => m.MedicamentoId == Id)
                 .FirstOrDefault();
             farmaciaContext.Medicamento.Entry(medicamento).State = EntityState.Deleted;
-            farmaciaContext.SaveChanges();
+            _ = farmaciaContext.SaveChanges();
             return medicamento;
         }
         //CreateEstantes
-        public Ubicacion CreateEstantes(int Estante, int Casilla, int Caja)
+        public void CreateEstantes(int Casillas, int Cajas)
         {
-            Ubicacion[,,] estante = new Ubicacion[Estante, Casilla, Caja];
-            Ubicacion ubicacion = null;
+            int buscarId = farmaciaContext.Ubicacion
+                .OrderByDescending(x => x.Estante)
+                .FirstOrDefault().Estante;
 
-            for (int i = 0; i < Estante; i++)
+            for (int i = 1; i <= Casillas; i++)
             {
-                for (int j = 0; j < Casilla; j++)
+                for (int j = 1; j <= Cajas; j++)
                 {
-                    for (int k = 0; k < Caja; k++)
-                    {
-                        ubicacion = estante[i, j, k];                     
-                    }
-                    ubicacion = new Ubicacion();
-                    ubicacion.Estante = ubicacion.Estante;
-                    ubicacion.Casilla = ubicacion.Casilla;
-                    ubicacion.Caja = ubicacion.Caja;
-                    farmaciaContext.Ubicacion.Entry(ubicacion).State = EntityState.Added;
+                    Ubicacion estante = new Ubicacion();
+                    estante.Estante = buscarId+1;
+                    estante.Casilla = i;
+                    estante.Caja = j;
+                    farmaciaContext.Ubicacion.Entry(estante).State = EntityState.Added;
                     farmaciaContext.SaveChanges();
-                }
-            }           
-            return ubicacion;
+                }               
+            }
         }
         //LocateMedicamento
-        public MedicamentoUbicacion LocateMedicamento(int MedicamentoId, int UbicacionId)
+        public MedicamentoUbicacion LocateMedicamento(int Id, int nuevaUbicacionId)
         {
             MedicamentoUbicacion medicamentoUbicacion = farmaciaContext.MedicamentoUbicacion
-                    .Where(m => m.MedicamentoId == MedicamentoId && m.UbicacionId == UbicacionId)
-                    .FirstOrDefault();
-            medicamentoUbicacion.MedicamentoId = MedicamentoId;
-            medicamentoUbicacion.UbicacionId = UbicacionId;
+                .Where(mu => mu.MedicamentoUbicacionId == Id)
+                .FirstOrDefault();
+            medicamentoUbicacion.UbicacionId = nuevaUbicacionId;
             farmaciaContext.MedicamentoUbicacion.Entry(medicamentoUbicacion).State = EntityState.Modified;
-            farmaciaContext.SaveChanges();
+            _ = farmaciaContext.SaveChanges();
             return medicamentoUbicacion;
         }
     }
