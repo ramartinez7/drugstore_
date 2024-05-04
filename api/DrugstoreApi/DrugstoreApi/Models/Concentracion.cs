@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace DrugstoreApi.Models;
+﻿namespace DrugstoreApi.Models;
 
 public partial class Concentracion
 {

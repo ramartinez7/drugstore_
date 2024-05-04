@@ -3,7 +3,7 @@ using DrugstoreApi.Dto.Response;
 using DrugstoreApi.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace DrugstoreApi.Controllers
+namespace DrugstoreApi.Services
 {
     public interface IFarmacia
     {
@@ -14,6 +14,7 @@ namespace DrugstoreApi.Controllers
         Medicamento DeleteMedicamento(int Id);
         void CreateEstantes(int Casillas, int Cajas);
         MedicamentoUbicacion LocateMedicamento(int Id, int nuevaUbicacionId);
+        MemoryStream GenerateReporte();
     }
     //Inyección DbContext
     public class FarmaciaManager : IFarmacia
@@ -71,6 +72,7 @@ namespace DrugstoreApi.Controllers
                 .Include(m => m.Categoria)
                 .Where(m => m.MedicamentoId == Id)
                 .FirstOrDefault();
+
             response.Nombre = medicamento.Nombre;
             response.Activo = medicamento.Activo;
             response.Descripcion = medicamento.Descripcion;
@@ -133,18 +135,25 @@ namespace DrugstoreApi.Controllers
             {
                 for (int j = 1; j <= Cajas; j++)
                 {
-                    Ubicacion estante = new Ubicacion();
-                    estante.Estante = buscarId+1;
+                    Ubicacion estante = new();
+                    estante.Estante = buscarId + 1;
                     estante.Casilla = i;
                     estante.Caja = j;
                     farmaciaContext.Ubicacion.Entry(estante).State = EntityState.Added;
-                    farmaciaContext.SaveChanges();
-                }               
+                    _ = farmaciaContext.SaveChanges();
+                }
             }
         }
         //LocateMedicamento
         public MedicamentoUbicacion LocateMedicamento(int Id, int nuevaUbicacionId)
         {
+            bool exists = farmaciaContext.Ubicacion.Any(x => x.UbicacionId == nuevaUbicacionId);
+
+            if (!exists)
+            {
+                throw new Exception("Ubicacion no existente: " + nuevaUbicacionId);
+            }
+
             MedicamentoUbicacion medicamentoUbicacion = farmaciaContext.MedicamentoUbicacion
                 .Where(mu => mu.MedicamentoUbicacionId == Id)
                 .FirstOrDefault();
@@ -152,6 +161,29 @@ namespace DrugstoreApi.Controllers
             farmaciaContext.MedicamentoUbicacion.Entry(medicamentoUbicacion).State = EntityState.Modified;
             _ = farmaciaContext.SaveChanges();
             return medicamentoUbicacion;
+        }
+        //GenerateReporte
+        public MemoryStream GenerateReporte()
+        {
+            MemoryStream memoryStream = new();
+            StreamWriter streamWriter = new(memoryStream);
+
+            List<Medicamento> medicamentos = farmaciaContext.Medicamento
+                .Include(m => m.Presentacion)
+                .Include(m => m.Concentracion)
+                .Include(m => m.Administracion)
+                .Include(m => m.Categoria)
+                .ToList();
+
+            foreach (Medicamento medicamento in medicamentos)
+            {
+                string line = $"{medicamento.Nombre}|{(medicamento.Activo ? "Si" : "No")}|{medicamento.Descripcion}|{medicamento.Presentacion.Tipo}|{medicamento.Concentracion.Tipo}|{medicamento.Administracion.Tipo}|{medicamento.Categoria.Nombre}";
+                streamWriter.WriteLine(line);
+            }
+
+            streamWriter.Flush();
+            memoryStream.Position = 0;
+            return memoryStream;
         }
     }
 }
